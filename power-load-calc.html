@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Size Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .system-config {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .config-item label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .config-item input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .config-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .config-item small {
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .component-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .form-row input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-row input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-add {
+            background: #667eea;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-add:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            padding: 8px 12px;
+        }
+        
+        .btn-remove:hover {
+            background: #c82333;
+        }
+        
+        .components-list {
+            margin-bottom: 20px;
+        }
+        
+        .component-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .component-item span {
+            font-size: 14px;
+        }
+        
+        .component-item .name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .results h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .result-item .label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .result-item .value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .result-item .unit {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-left: 5px;
+        }
+        
+        .battery-recommendations {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .battery-recommendations h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .battery-option {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .battery-option strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .voltage-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        
+        .label-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .config-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row, .component-item, .label-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔋 Battery Size Calculator</h1>
+            <p>Calculate battery requirements for your integrated system</p>
+        </div>
+        
+        <div class="content">
+            <div class="system-config">
+                <h3 style="margin-bottom: 15px;">System Configuration</h3>
+                <div class="config-row">
+                    <div class="config-item">
+                        <label>Minimum Operating Voltage (V)</label>
+                        <input type="number" id="minVoltage" placeholder="e.g., 3.0" step="0.1" min="0" onchange="calculateTotal()">
+                        <small>Minimum voltage your microcontroller/system needs</small>
+                    </div>
+                    <div class="config-item">
+                        <label>Maximum Operating Voltage (V)</label>
+                        <input type="number" id="maxVoltage" placeholder="e.g., 5.5" step="0.1" min="0" onchange="calculateTotal()">
+                        <small>Maximum safe voltage for your system</small>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-item">
+                        <label>Duty Cycle (%)</label>
+                        <input type="number" id="dutyCycle" value="100" min="0" max="100" step="1" onchange="calculateTotal()">
+                        <small>Percentage of time components are active (100% = always on)</small>
+                    </div>
+                    <div class="config-item">
+                        <label>Battery Discharge Rate (C-rate)</label>
+                        <input type="number" id="dischargeRate" value="0.5" min="0.1" max="10" step="0.1" onchange="calculateTotal()">
+                        <small>Maximum safe discharge (0.5C = half capacity/hour, 1C = full capacity/hour)</small>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <div class="config-item">
+                        <label>Desired Runtime (hours)</label>
+                        <input type="number" id="runtime" placeholder="e.g., 24" step="0.1" min="0" onchange="calculateTotal()">
+                        <small>How long the system should run on battery</small>
+                    </div>
+                    <div class="config-item">
+                        <label>Safety Margin (%)</label>
+                        <input type="number" id="safetyMargin" value="20" min="0" max="100" step="5" onchange="calculateTotal()">
+                        <small>Additional capacity buffer (recommended: 20-30%)</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="component-form">
+                <h3 style="margin-bottom: 15px;">Add Component</h3>
+                <div class="form-row">
+                    <input type="text" id="componentName" placeholder="Component Name (e.g., MCU, Sensor, Motor)">
+                    <input type="number" id="voltage" placeholder="Voltage (V)" step="0.1" min="0">
+                    <input type="number" id="current" placeholder="Current (mA)" step="0.1" min="0">
+                    <input type="number" id="quantity" placeholder="Qty" value="1" min="1">
+                    <div></div>
+                </div>
+                <button class="btn btn-add" onclick="addComponent()">+ Add Component</button>
+            </div>
+            
+            <div class="components-list">
+                <h3 style="margin-bottom: 15px;">Components</h3>
+                <div class="label-row">
+                    <span>Name</span>
+                    <span>Voltage (V)</span>
+                    <span>Current (mA)</span>
+                    <span>Quantity</span>
+                    <span>Action</span>
+                </div>
+                <div id="componentsList"></div>
+            </div>
+            
+            <div class="results">
+                <h2>📊 Power & Battery Requirements</h2>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="label">Avg Current Draw</div>
+                        <div class="value" id="avgCurrent">0<span class="unit">mA</span></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Peak Current Draw</div>
+                        <div class="value" id="totalCurrent">0<span class="unit">mA</span></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Total Power</div>
+                        <div class="value" id="totalPower">0<span class="unit">W</span></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Required Capacity</div>
+                        <div class="value" id="requiredCapacity">0<span class="unit">mAh</span></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">With Safety Margin</div>
+                        <div class="value" id="safeCapacity">0<span class="unit">mAh</span></div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Min Battery Size</div>
+                        <div class="value" id="minBatterySize">0<span class="unit">mAh</span></div>
+                    </div>
+                </div>
+                
+                <div id="batteryRecommendations"></div>
+                <div id="voltageWarning"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let components = [];
+        
+        function addComponent() {
+            const name = document.getElementById('componentName').value;
+            const voltage = parseFloat(document.getElementById('voltage').value);
+            const current = parseFloat(document.getElementById('current').value);
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            
+            if (!name || !voltage || !current) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            components.push({
+                id: Date.now(),
+                name,
+                voltage,
+                current,
+                quantity
+            });
+            
+            document.getElementById('componentName').value = '';
+            document.getElementById('voltage').value = '';
+            document.getElementById('current').value = '';
+            document.getElementById('quantity').value = '1';
+            
+            renderComponents();
+            calculateTotal();
+        }
+        
+        function removeComponent(id) {
+            components = components.filter(c => c.id !== id);
+            renderComponents();
+            calculateTotal();
+        }
+        
+        function renderComponents() {
+            const list = document.getElementById('componentsList');
+            
+            if (components.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No components added yet</p>';
+                return;
+            }
+            
+            list.innerHTML = components.map(comp => {
+                const power = (comp.voltage * comp.current / 1000 * comp.quantity).toFixed(2);
+                return `
+                    <div class="component-item">
+                        <span class="name">${comp.name}</span>
+                        <span>${comp.voltage}V</span>
+                        <span>${comp.current}mA (${power}W)</span>
+                        <span>${comp.quantity}x</span>
+                        <button class="btn btn-remove" onclick="removeComponent(${comp.id})">Remove</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function calculateTotal() {
+            const minVoltage = parseFloat(document.getElementById('minVoltage').value) || 0;
+            const maxVoltage = parseFloat(document.getElementById('maxVoltage').value) || 0;
+            const runtime = parseFloat(document.getElementById('runtime').value) || 0;
+            const safetyMargin = parseFloat(document.getElementById('safetyMargin').value) / 100;
+            const dutyCycle = parseFloat(document.getElementById('dutyCycle').value) / 100;
+            const dischargeRate = parseFloat(document.getElementById('dischargeRate').value) || 0.5;
+            
+            let totalCurrent = 0;
+            let totalPower = 0;
+            
+            components.forEach(comp => {
+                const current = comp.current * comp.quantity;
+                const power = comp.voltage * current / 1000;
+                totalCurrent += current;
+                totalPower += power;
+            });
+            
+            // Average current considering duty cycle
+            const avgCurrent = totalCurrent * dutyCycle;
+            
+            // Required capacity based on average current and runtime
+            const requiredCapacity = avgCurrent * runtime;
+            const safeCapacity = requiredCapacity * (1 + safetyMargin);
+            
+            // Minimum battery size based on discharge rate
+            // If peak current exceeds discharge rate capability, need larger battery
+            const minBatterySizeForDischarge = totalCurrent / dischargeRate;
+            
+            // Final minimum battery size is the larger of capacity requirement and discharge rate requirement
+            const finalMinBatterySize = Math.max(safeCapacity, minBatterySizeForDischarge);
+            
+            document.getElementById('avgCurrent').innerHTML = `${avgCurrent.toFixed(1)}<span class="unit">mA</span>`;
+            document.getElementById('totalCurrent').innerHTML = `${totalCurrent.toFixed(1)}<span class="unit">mA</span>`;
+            document.getElementById('totalPower').innerHTML = `${totalPower.toFixed(2)}<span class="unit">W</span>`;
+            document.getElementById('requiredCapacity').innerHTML = `${requiredCapacity.toFixed(0)}<span class="unit">mAh</span>`;
+            document.getElementById('safeCapacity').innerHTML = `${safeCapacity.toFixed(0)}<span class="unit">mAh</span>`;
+            document.getElementById('minBatterySize').innerHTML = `${finalMinBatterySize.toFixed(0)}<span class="unit">mAh</span>`;
+            
+            generateBatteryRecommendations(minVoltage, maxVoltage, finalMinBatterySize, dischargeRate, totalCurrent);
+            checkVoltageCompatibility(minVoltage, maxVoltage);
+        }
+        
+        function generateBatteryRecommendations(minV, maxV, capacity, dischargeRate, peakCurrent) {
+            const recDiv = document.getElementById('batteryRecommendations');
+            
+            if (!minV || !maxV || !capacity || components.length === 0) {
+                recDiv.innerHTML = '';
+                return;
+            }
+            
+            let recommendations = '<div class="battery-recommendations"><h3>🔋 Battery Recommendations</h3>';
+            
+            // Add discharge rate info
+            const requiredDischargeCapability = peakCurrent.toFixed(0);
+            recommendations += `<p style="margin-bottom: 15px; font-size: 14px; opacity: 0.95;">Peak current: ${requiredDischargeCapability}mA requires battery rated for at least ${(peakCurrent / 1000).toFixed(2)}A discharge at ${dischargeRate}C-rate</p>`;
+            
+            // Li-Ion/Li-Po (3.0V - 4.2V per cell)
+            if (minV <= 3.0 && maxV >= 4.2) {
+                recommendations += `
+                    <div class="battery-option">
+                        <strong>Single Cell Li-Ion/Li-Po (3.7V nominal)</strong>
+                        Voltage Range: 3.0V - 4.2V<br>
+                        Required Capacity: ${capacity.toFixed(0)} mAh or higher<br>
+                        Discharge Rating: ${dischargeRate}C minimum (${requiredDischargeCapability}mA peak)<br>
+                        <em>Good for: Compact designs, high energy density</em>
+                    </div>
+                `;
+            }
+            
+            // 2S Li-Ion/Li-Po (6.0V - 8.4V)
+            if (minV <= 6.0 && maxV >= 8.4) {
+                recommendations += `
+                    <div class="battery-option">
+                        <strong>2S Li-Ion/Li-Po (7.4V nominal)</strong>
+                        Voltage Range: 6.0V - 8.4V<br>
+                        Required Capacity: ${capacity.toFixed(0)} mAh or higher<br>
+                        Discharge Rating: ${dischargeRate}C minimum (${requiredDischargeCapability}mA peak)<br>
+                        <em>Good for: Higher voltage requirements, motor applications</em>
+                    </div>
+                `;
+            }
+            
+            // 3S Li-Ion/Li-Po (9.0V - 12.6V)
+            if (minV <= 9.0 && maxV >= 12.6) {
+                recommendations += `
+                    <div class="battery-option">
+                        <strong>3S Li-Ion/Li-Po (11.1V nominal)</strong>
+                        Voltage Range: 9.0V - 12.6V<br>
+                        Required Capacity: ${capacity.toFixed(0)} mAh or higher<br>
+                        Discharge Rating: ${dischargeRate}C minimum (${requiredDischargeCapability}mA peak)<br>
+                        <em>Good for: 12V systems, high power applications</em>
+                    </div>
+                `;
+            }
+            
+            // Alkaline AA (1.5V per cell)
+            const aaCells = Math.ceil(minV / 1.2);
+            const aaMaxV = aaCells * 1.5;
+            if (aaMaxV <= maxV) {
+                recommendations += `
+                    <div class="battery-option">
+                        <strong>${aaCells}x AA Alkaline (${(aaCells * 1.5).toFixed(1)}V nominal)</strong>
+                        Voltage Range: ${(aaCells * 1.0).toFixed(1)}V - ${aaMaxV.toFixed(1)}V<br>
+                        Typical Capacity: 2000-3000 mAh (verify discharge capability for peak current)<br>
+                        <em>Good for: Easy availability, non-rechargeable option</em>
+                    </div>
+                `;
+            }
+            
+            recommendations += '</div>';
+            recDiv.innerHTML = recommendations;
+        }
+        
+        function checkVoltageCompatibility(minV, maxV) {
+            const warningDiv = document.getElementById('voltageWarning');
+            
+            if (!minV || !maxV) {
+                warningDiv.innerHTML = '';
+                return;
+            }
+            
+            let warnings = [];
+            
+            if (maxV < minV) {
+                warnings.push('⚠️ Maximum voltage is lower than minimum voltage. Please check your values.');
+            }
+            
+            components.forEach(comp => {
+                if (comp.voltage < minV) {
+                    warnings.push(`⚠️ ${comp.name} operates at ${comp.voltage}V, which is below the minimum system voltage of ${minV}V.`);
+                }
+                if (comp.voltage > maxV) {
+                    warnings.push(`⚠️ ${comp.name} operates at ${comp.voltage}V, which is above the maximum system voltage of ${maxV}V.`);
+                }
+            });
+            
+            if (warnings.length > 0) {
+                warningDiv.innerHTML = '<div class="voltage-warning">' + warnings.join('<br><br>') + '</div>';
+            } else {
+                warningDiv.innerHTML = '';
+            }
+        }
+        
+        renderComponents();
+        calculateTotal();
+    </script>
+</body>
+</html>
